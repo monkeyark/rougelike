@@ -95,7 +95,7 @@ void npc_next_pos_05(NPC *npc)
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		NPC *next_npc = &dungeon.monster[i];
+		NPC *next_npc = &dungeon.npcs[i];
 		if (next_npc->birth == npc->birth) continue;
 
 		if (next_npc->row == next_row && next_npc->col == next_col)
@@ -174,7 +174,7 @@ void npc_next_pos_07(NPC *npc)
 	//check if next terrain is npc
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		NPC *next_npc = &dungeon.monster[i];
+		NPC *next_npc = &dungeon.npcs[i];
 		if (next_npc->birth == npc->birth) continue;
 
 		if (next_npc->row == next_row && next_npc->col == next_col)
@@ -208,7 +208,7 @@ void move_npc()
 		int i;
 		for (i = 0; i < dungeon.num_mon; i++)
 		{
-			NPC *npc = &dungeon.monster[i];
+			NPC *npc = &dungeon.npcs[i];
 			if (!npc->dead)
 			{
 				npc_next_pos_05(npc);
@@ -270,11 +270,11 @@ const char *move_pc(int row_move, int col_move)
 		{
 			int d = dungeon.pc->damage.roll();
 
-			if (dungeon.monster[npc_index].hitpoints <= d)
+			if (dungeon.npcs[npc_index].hitpoints <= d)
 			{
-				dungeon.monster[npc_index].dead = true;
-				dungeon.monster[npc_index].row = -1;
-				dungeon.monster[npc_index].col = -1;
+				dungeon.npcs[npc_index].dead = true;
+				dungeon.npcs[npc_index].row = -1;
+				dungeon.npcs[npc_index].col = -1;
 				message = "You kill monster - ";
 				dungeon.pc->row += row_move;
 				dungeon.pc->col += col_move;
@@ -283,7 +283,7 @@ const char *move_pc(int row_move, int col_move)
 			}
 			else
 			{
-				dungeon.monster[npc_index].hitpoints -= d;
+				dungeon.npcs[npc_index].hitpoints -= d;
 				message = "PC is attacking";
 			}
 		}

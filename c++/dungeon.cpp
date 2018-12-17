@@ -2,6 +2,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include <vector>
+
 #include "dungeon.h"
 #include "move.h"
 #include "path.h"
@@ -30,9 +32,9 @@ int is_monster(int row, int col)
 {
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		if (row == dungeon.monster[i].row &&
-				col == dungeon.monster[i].col &&
-				!dungeon.monster[i].dead)
+		if (row == dungeon.npcs[i].row &&
+				col == dungeon.npcs[i].col &&
+				!dungeon.npcs[i].dead)
 		{
 			return i;
 		}
@@ -160,7 +162,7 @@ int is_valid_room(int row, int col, int width, int height)
 	return 1;
 }
 
-Water new_water_random()
+Water new_water()
 {
 	Water r;
 	r.row = get_random(ROW, 0);
@@ -184,13 +186,13 @@ Water new_water_random()
 	}
 	else
 	{
-		return new_water_random();
+		return new_water();
 	}
 
 	return r;
 }
 
-Lava new_lava_random()
+Lava new_lava()
 {
 	Lava r;
 	r.row = get_random(ROW, 0);
@@ -214,13 +216,13 @@ Lava new_lava_random()
 	}
 	else
 	{
-		return new_lava_random();
+		return new_lava();
 	}
 
 	return r;
 }
 
-Room new_room_random()
+Room new_room()
 {
 	Room r;
 	r.row = get_random(ROW, 0);
@@ -244,14 +246,20 @@ Room new_room_random()
 	}
 	else
 	{
-		return new_room_random();
+		return new_room();
 	}
 
 	return r;
 }
 
-void new_room(int row, int col, int width, int height)
+Room set_room(int row, int col, int width, int height)
 {
+	Room r;
+	r.row = row;
+	r.col = col;
+	r.width = width;
+	r.height = height;
+
 	for (int i = row; i < row + height; i++)
 	{
 		for (int j = col; j < col + width; j++)
@@ -261,6 +269,8 @@ void new_room(int row, int col, int width, int height)
 			dungeon.map[i][j].hardness = ROOM_H;
 		}
 	}
+
+	return r;
 }
 
 int distance(int aRow, int aCol, int bRow, int bCol)
@@ -393,101 +403,7 @@ void remember_map_PC()
 	}
 }
 
-NPC new_NPC(int birth)
-{
-	NPC npc;
-	int row = get_random(ROW, 0);
-	int col = get_random(COL, 0);
-	//add monster into map
-	if (dungeon.map[row][col].space == ROOM ||
-			dungeon.map[row][col].space == CORRIDOR)
-	{
-		npc.row = row;
-		npc.col = col;
-		npc.birth = birth;
-		//creating NPC with all four ability having 1/2 probability, clean unused bits
-		npc.ability = rand() & 0xf;
-		npc.speed = get_random(20, 5);
-		npc.dead = 0;
-		if (npc.ability & NPC_TELEPATH) //monster is telepath
-		{
-			npc.pc_row = dungeon.pc->row;
-			npc.pc_col = dungeon.pc->col;
-		}
-
-		sprintf(&npc.symbol, "%x", npc.ability);
-		dungeon.map[npc.row][npc.col].space = npc.symbol;
-		dungeon.map[npc.row][npc.col].hardness = 0;
-	}
-	else
-	{
-		return new_NPC(birth);
-	}
-
-	return npc;
-}
-
-void new_PC()
-{
-	//add initial player location
-	dungeon.pc->birth = -1;
-	dungeon.pc->speed = 10;
-	dungeon.pc->dead = 0;
-	dungeon.pc->row = dungeon.rooms[0].row;
-	dungeon.pc->col = dungeon.rooms[0].col;
-	dungeon.map[dungeon.pc->row][dungeon.pc->col].space = PLAYER;
-	dungeon.map[dungeon.pc->row][dungeon.pc->col].hardness = 0;
-
-	remember_map_PC();
-}
-
-void generate_dungeon()
-{
-	//initialize dungeon
-	init_dungeon();
-
-	//generate random number of rooms
-	dungeon.num_room = get_random(7, 5);
-	//generate random number of monster
-	if (!dungeon.num_mon)
-	{
-		dungeon.num_mon = get_random(5, 8);
-	}
-
-	dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
-	dungeon.monster = (NPC *)malloc(dungeon.num_mon * sizeof(NPC));
-	int i;
-
-	//add rooms
-	for (i = 0; i < dungeon.num_room; i++)
-	{
-		dungeon.rooms[i] = new_room_random();
-	}
-
-	//add corridors
-	for (i = 0; i < dungeon.num_room - 1; i++)
-	{
-		int row_from = dungeon.rooms[i].row;
-		int col_from = dungeon.rooms[i].col;
-		int row_to = dungeon.rooms[i + 1].row;
-		int col_to = dungeon.rooms[i + 1].col;
-		new_corridor(row_from, col_from, row_to, col_to);
-	}
-
-	//add stair
-	new_stair();
-
-	//add pc
-	new_PC();
-
-	//add npc
-	for (i = 0; i < dungeon.num_mon; i++)
-	{
-		dungeon.monster[i] = new_NPC(i);
-	}
-}
-
-void new_PC_desc()
+PC new_PC()
 {
 	//add initial player location
 	PC pc;
@@ -525,9 +441,11 @@ void new_PC_desc()
 
 	dungeon.pc = (PC *)calloc(1, sizeof(PC));
 	dungeon.pc[0] = pc;
+
+	return pc;
 }
 
-NPC new_NPC_desc(int birth)
+NPC new_NPC(int birth)
 {
 	NPC npc;
 	int row, col;
@@ -543,15 +461,15 @@ NPC new_NPC_desc(int birth)
 	Monster mons;
 	do
 	{
-		index = get_random(dungeon.mon.size(), 0);
+		index = get_random(dungeon.monster_desc.size(), 0);
 		rarity = get_random(99, 0);
-		mons = dungeon.mon.at(index);
+		mons = dungeon.monster_desc.at(index);
 		is_unique_generated = mons.seen && (mons.ability & NPC_UNIQ);
 		if (rarity >= mons.rarity)
 		{
 			continue;
 		}
-		dungeon.mon.at(index).seen = true;
+		dungeon.monster_desc.at(index).seen = true;
 	} while ((rarity >= mons.rarity) || is_unique_generated);
 
 	npc.row = row;
@@ -585,7 +503,7 @@ bool is_inventory_open()
 	return dungeon.pc->inventory_size != PC_INVENTORY;
 }
 
-Item new_item_desc(int birth)
+Item new_item(int birth)
 {
 	Item item;
 	int row, col;
@@ -602,15 +520,15 @@ Item new_item_desc(int birth)
 	do
 	{
 		//get random index of object from description
-		index = get_random(dungeon.obj.size(), 0);
+		index = get_random(dungeon.object_desc.size(), 0);
 		rarity = get_random(99, 0);
-		obj = dungeon.obj.at(index);
-		is_artifact_generated = dungeon.obj.at(index).seen && dungeon.obj.at(index).artifact;
+		obj = dungeon.object_desc.at(index);
+		is_artifact_generated = dungeon.object_desc.at(index).seen && dungeon.object_desc.at(index).artifact;
 		if (rarity >= obj.rarity)
 		{
 			continue;
 		}
-		dungeon.obj.at(index).seen = true;
+		dungeon.object_desc.at(index).seen = true;
 	} while ((rarity >= obj.rarity) || is_artifact_generated);
 
 	item.row = row;
@@ -654,7 +572,7 @@ Item new_item_desc(int birth)
 	return item;
 }
 
-void generate_dungeon_desc()
+void generate_dungeon()
 {
 	std::string path_monster = "./description/monster_desc.txt";
 	std::string path_object = "./description/object_desc.txt";
@@ -678,30 +596,33 @@ void generate_dungeon_desc()
 	//dungeon.num_mon = 1;//DEBUG
 	dungeon.num_item = get_random(5, 11);
 
-	dungeon.rooms = (Room *)calloc(dungeon.num_room, sizeof(Room));
-	dungeon.lavas = (Lava *)calloc(dungeon.num_lava, sizeof(Lava));
-	dungeon.waters = (Water *)calloc(dungeon.num_water, sizeof(Water));
-	dungeon.monster = (NPC *)calloc(dungeon.num_mon, sizeof(NPC));
-	dungeon.item = (Item *)calloc(dungeon.num_item, sizeof(Item));
+	// dungeon.rooms = (Room *)calloc(dungeon.num_room, sizeof(Room));
+	// dungeon.lavas = (Lava *)calloc(dungeon.num_lava, sizeof(Lava));
+	// dungeon.waters = (Water *)calloc(dungeon.num_water, sizeof(Water));
+	// dungeon.monster = (NPC *)calloc(dungeon.num_mon, sizeof(NPC));
+	// dungeon.item = (Item *)calloc(dungeon.num_item, sizeof(Item));
 
 	int i;
 
 	//add lava
 	for (i = 0; i < dungeon.num_lava; i++)
 	{
-		dungeon.lavas[i] = new_lava_random();
+		//dungeon.lavas[i] = new_lava();
+		dungeon.lavas.push_back(new_lava());
 	}
 
 	//add water
 	for (i = 0; i < dungeon.num_water; i++)
 	{
-		dungeon.waters[i] = new_water_random();
+		//dungeon.waters[i] = new_water();
+		dungeon.waters.push_back(new_water());
 	}
 	
 	//add rooms
 	for (i = 0; i < dungeon.num_room; i++)
 	{
-		dungeon.rooms[i] = new_room_random();
+		//dungeon.rooms[i] = new_room();
+		dungeon.rooms.push_back(new_room());
 	}
 
 	int row_from, col_from, row_to, col_to;
@@ -754,34 +675,36 @@ void generate_dungeon_desc()
 	new_stair();
 
 	//add pc
-	new_PC_desc();
+	PC player = new_PC();
+	dungeon.pc = &player;
 
 	//add npc
 	for (i = 0; i < dungeon.num_mon; i++)
 	{
-		dungeon.monster[i] = new_NPC_desc(i);
+		//dungeon.npc[i] = new_NPC(i);
+		dungeon.npcs.push_back(new_NPC(i));
 	}
 
 	//add object
 	for (i = 0; i < dungeon.num_item; i++)
 	{
-		dungeon.item[i] = new_item_desc(i);
+		dungeon.item.push_back(new_item(i));
 	}
 }
 
 void delete_dungeon()
 {
-	free(dungeon.rooms);
-	free(dungeon.monster);
+	// free(dungeon.rooms);
+	// free(dungeon.monster);
 }
 
 void delete_dungeon_desc()
 {
-	free(dungeon.rooms);
-	free(dungeon.waters);
-	free(dungeon.lavas);
-	free(dungeon.monster);
-	free(dungeon.item);
+	// free(dungeon.rooms);
+	// free(dungeon.waters);
+	// free(dungeon.lavas);
+	// free(dungeon.monster);
+	// free(dungeon.item);
 	free(dungeon.pc->equipment);
 	free(dungeon.pc->inventory);
 	dungeon.pc->hitpoints = PC_FULL_HP;
@@ -853,7 +776,9 @@ void load_dungeon()
 	}
 
 	dungeon.num_room = (filesize - 1702) / 4;
-	dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
+	//dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
+	//TODO
+	//need to rewrite room construction with vector
 
 	uint8_t roomRead[filesize - 1702];
 	fread(roomRead, 1, filesize - 1702, f);
@@ -865,8 +790,8 @@ void load_dungeon()
 		dungeon.rooms[i].row = roomRead[n++];
 		dungeon.rooms[i].width = roomRead[n++];
 		dungeon.rooms[i].height = roomRead[n++];
-
-		new_room(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
+		
+		set_room(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
 	}
 
 	//add PC

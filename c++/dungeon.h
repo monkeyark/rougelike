@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector>
 #include <iostream>
+#include <vector>
 #include <string.h>
 
 #include "queue.h"
@@ -31,14 +31,14 @@
 #define PC_INVENTORY 10
 #define PC_FULL_HP 100000
 
-#define MIN(a, b)				\
-	({						\
+#define MIN(a, b)						\
+	({									\
 	 __typeof__ (a) _a = (a);			\
 	 __typeof__ (b) _b = (b);			\
 	 _a < _b ? _a : _b; })
 
-#define MAX(a, b)				\
-	({						\
+#define MAX(a, b)						\
+	({									\
 	 __typeof__ (a) _a = (a);			\
 	 __typeof__ (b) _b = (b);			\
 	 _a > _b ? _a : _b; })
@@ -269,6 +269,79 @@ class Object
 		bool seen;
 };
 
+/*
+#include <iostream>
+using namespace std;
+
+class LinkedList{
+    // Struct inside the class LinkedList
+    // This is one node which is not needed by the caller. It is just
+    // for internal work.
+    struct Node {
+        int x;
+        Node *next;
+    };
+
+// public member
+public:
+    // constructor
+    LinkedList(){
+        head = NULL; // set head to NULL
+    }
+
+    // destructor
+    ~LinkedList(){
+        Node *next = head;
+
+        while(next) {              // iterate over all elements
+            Node *deleteMe = next;
+            next = next->next;     // save pointer to the next element
+            delete deleteMe;       // delete the current entry
+        }
+    }
+
+    // This prepends a new value at the beginning of the list
+    void addValue(int val){
+        Node *n = new Node();   // create new Node
+        n->x = val;             // set value
+        n->next = head;         // make the node point to the next node.
+                                //  If the list is empty, this is NULL, so the end of the list --> OK
+        head = n;               // last but not least, make the head point at the new node.
+    }
+
+    // returns the first element in the list and deletes the Node.
+    // caution, no error-checking here!
+    int popValue(){
+        Node *n = head;
+        int ret = n->x;
+
+        head = head->next;
+        delete n;
+        return ret;
+    }
+
+// private member
+private:
+    Node *head; // this is the private member variable. It is just a pointer to the first Node
+};
+
+int main() {
+    LinkedList list;
+
+    list.addValue(5);
+    list.addValue(10);
+    list.addValue(20);
+
+    cout << list.popValue() << endl;
+    cout << list.popValue() << endl;
+    cout << list.popValue() << endl;
+    // because there is no error checking in popValue(), the following
+    // is undefined behavior. Probably the program will crash, because
+    // there are no more values in the list.
+    // cout << list.popValue() << endl;
+    return 0;
+}
+*/
 class Dungeon
 {
 	public:
@@ -279,29 +352,26 @@ class Dungeon
 		int num_water;
 		int num_lava;
 		int version;
-		Room *rooms;
-		Water *waters;
-		Lava *lavas;
-		NPC *monster;
-		Item *item;
+		std::vector<Room> rooms;
+		std::vector<Water> waters;
+		std::vector<Lava> lavas;
+		std::vector<NPC> npcs;
+		std::vector<Item> item;
 		PC *pc;
 		int cursor_row;
 		int cursor_col;
 		Terrain map[ROW][COL];
 		Queue pq_tunel;
 		Queue pq_nontunel;
-
-		std::vector<Monster> mon;
-		std::vector<Object> obj;
-		//std::vector<Monster> *mon;
-		//std::vector<Object> *obj;
+		std::vector<Monster> monster_desc;
+		std::vector<Object> object_desc;
 };
 
 extern Dungeon dungeon;
 
 void init_dungeon();
 void generate_dungeon();
-void generate_dungeon_desc();
+void generate_dungeon();
 void print_dungeon();
 void load_dungeon();
 void save_dungeon();

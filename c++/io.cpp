@@ -50,10 +50,10 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 				}
 				else if (!(npc_index < 0))
 				{
-					color = dungeon.monster[npc_index].color_display;
+					color = dungeon.npcs[npc_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
-					mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
+					mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
 				else if (!(item_index < 0))
@@ -234,10 +234,10 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(npc_index < 0))
 			{
-				color = dungeon.monster[npc_index].color_display;
+				color = dungeon.npcs[npc_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 			}
 			else if (!(item_index < 0))
@@ -296,10 +296,10 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(npc_index < 0))
 			{
-				color = dungeon.monster[npc_index].color_display;
+				color = dungeon.npcs[npc_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 			}
 			else if (!(item_index < 0))
@@ -1104,7 +1104,7 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 	for (i = 0, j = start; i < ROW && j < dungeon.num_mon - start; i++, j++)
 	{
 
-		NPC npc = dungeon.monster[j];
+		NPC npc = dungeon.npcs[j];
 		int row_dis = npc.row - dungeon.pc->row;
 		int col_dis = npc.col - dungeon.pc->col;
 		const char *row_pos, *col_pos;
@@ -1180,9 +1180,9 @@ const char *move_pc_teleport(int row_move, int col_move)
 		if (!(is_monster(dungeon.pc->row, dungeon.pc->col) < 0))
 		{
 			int i = is_monster(dungeon.pc->row, dungeon.pc->col);
-			dungeon.monster[i].dead = true;
-			dungeon.monster[i].row = -1;
-			dungeon.monster[i].col = -1;
+			dungeon.npcs[i].dead = true;
+			dungeon.npcs[i].row = -1;
+			dungeon.npcs[i].col = -1;
 		}
 		if (dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain == ROCK)
 		{
@@ -1232,10 +1232,10 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 				}
 				else if (!(npc_index < 0))
 				{
-					color = dungeon.monster[npc_index].color_display;
+					color = dungeon.npcs[npc_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
-					mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
+					mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
 				else if (!(item_index < 0))
@@ -1293,7 +1293,7 @@ const char *print_monster_descr(WINDOW *lookup, int row_move, int col_move)
 	const char *message;
 	if (!(npc_index < 0))
 	{
-		NPC npc = dungeon.monster[npc_index];
+		NPC npc = dungeon.npcs[npc_index];
 		message = "press t return to lookup, ESC return to game";
 		wprintw(lookup, "\n");
 
@@ -1691,7 +1691,7 @@ void dungeon_ncurses()
 					//generate_dungeon();
 
 					delete_dungeon_desc();
-					generate_dungeon_desc();
+					generate_dungeon();
 					message = "You went up stair";
 				}
 				else
@@ -1706,7 +1706,7 @@ void dungeon_ncurses()
 					//generate_dungeon();
 
 					delete_dungeon_desc();
-					generate_dungeon_desc();
+					generate_dungeon();
 					message = "You went down stair";
 				}
 				else

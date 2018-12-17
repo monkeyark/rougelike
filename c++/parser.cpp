@@ -527,10 +527,8 @@ void load_monster_desc(std::string path_monster)
             std::cout << "discard monster" << std::endl;
             return;
         }
-        //TODO
-        dungeon.mon.push_back(*m);
-        //(dungeon.mon)->push_back(*m);
-        //(*dungeon.mon).push_back(*m);
+
+        dungeon.monster_desc.push_back(*m);
     }
     delete m;
 }
@@ -940,19 +938,17 @@ void load_object_desc(std::string path_object)
             std::cout << "discard object" << std::endl;
             return;
         }
-        //TODO
-        dungeon.obj.push_back(*object);
-        //(dungeon.it)->push_back(*object);
-        //(*(dungeon.it)).push_back(*object);
+
+        dungeon.object_desc.push_back(*object);
     }
     delete object;
 }
 
 void print_monster_desc()
 {
-    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+    for (unsigned int i = 0; i < dungeon.monster_desc.size(); i++)
     {
-        Monster m = dungeon.mon.at(i);
+        Monster m = dungeon.monster_desc.at(i);
         std::cout << m.name << std::endl;
         std::cout << m.description << std::endl;
         std::cout << m.color_string << std::endl;
@@ -968,9 +964,9 @@ void print_monster_desc()
 
 void print_monster_desc_with_type()
 {
-    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+    for (unsigned int i = 0; i < dungeon.monster_desc.size(); i++)
     {
-        Monster m = dungeon.mon.at(i);
+        Monster m = dungeon.monster_desc.at(i);
         std::cout << "NAME: " << m.name << std::endl;
         std::cout << "DESCRIPTION: " << m.description << std::endl;
         std::cout << "COLOR: " << m.color_string << std::endl;
@@ -986,9 +982,9 @@ void print_monster_desc_with_type()
 
 void print_object_desc()
 {
-    for (unsigned int i = 0; i < dungeon.obj.size(); i++)
+    for (unsigned int i = 0; i < dungeon.object_desc.size(); i++)
     {
-        Object object = dungeon.obj.at(i);
+        Object object = dungeon.object_desc.at(i);
         std::cout << object.name << std::endl;
         std::cout << object.description << std::endl;
         std::cout << object.type_string << std::endl;
@@ -1009,9 +1005,9 @@ void print_object_desc()
 
 void print_object_desc_with_type()
 {
-    for (unsigned int i = 0; i < dungeon.obj.size(); i++)
+    for (unsigned int i = 0; i < dungeon.object_desc.size(); i++)
     {
-        Object object = dungeon.obj.at(i);
+        Object object = dungeon.object_desc.at(i);
         std::cout << "NAME: " << object.name << std::endl;
         std::cout << "DESCRIPTION: " << object.description << std::endl;
         std::cout << "TYPE: " << object.type_string << std::endl;
