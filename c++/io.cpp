@@ -48,7 +48,7 @@ void print_dungeon_fog(WINDOW *game, const char *message)
 				{
 					mvwprintw(game, i, j, "@");
 				}
-				else if (!(npc_index < 0))
+				else if (npc_index >= 0)
 				{
 					color = dungeon.npcs[npc_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
@@ -56,7 +56,7 @@ void print_dungeon_fog(WINDOW *game, const char *message)
 					mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
-				else if (!(item_index < 0))
+				else if (is_on_floor_item(i -1, j))
 				{
 					color = dungeon.items[item_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
@@ -232,7 +232,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			{
 				mvwprintw(game, i, j, "@");
 			}
-			else if (!(npc_index < 0))
+			else if (npc_index >= 0)
 			{
 				color = dungeon.npcs[npc_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
@@ -240,7 +240,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 			}
-			else if (!(item_index < 0))
+			else if (item_index >= 0)
 			{
 				color = dungeon.items[item_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
@@ -294,7 +294,7 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			{
 				mvwprintw(game, i, j, "@");
 			}
-			else if (!(npc_index < 0))
+			else if (npc_index >= 0)
 			{
 				color = dungeon.npcs[npc_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
@@ -302,7 +302,7 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 			}
-			else if (!(item_index < 0))
+			else if (item_index >= 0)
 			{
 				color = dungeon.items[item_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
@@ -1229,7 +1229,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 				{
 					mvwprintw(game, i, j, "@");
 				}
-				else if (!(npc_index < 0))
+				else if (npc_index >= 0)
 				{
 					color = dungeon.npcs[npc_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
@@ -1237,7 +1237,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 					mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
-				else if (!(item_index < 0))
+				else if (item_index >= 0)
 				{
 					color = dungeon.items[item_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
@@ -1290,7 +1290,7 @@ const char *print_monster_descr(WINDOW *lookup, int row_move, int col_move)
 	int i, j;
 	int npc_index = is_monster(dungeon.cursor_row, dungeon.cursor_col);
 	const char *message;
-	if (!(npc_index < 0))
+	if (npc_index >= 0)
 	{
 		NPC npc = dungeon.npcs[npc_index];
 		message = "press t return to lookup, ESC return to game";

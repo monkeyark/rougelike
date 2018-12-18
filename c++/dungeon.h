@@ -294,6 +294,7 @@ int is_inside(int row, int col);
 int is_monster(int row, int col);
 int is_item(int row, int col);
 bool is_inventory_full();
+bool is_on_floor_item(int row, int col);
 void remember_map_PC();
 
 #endif

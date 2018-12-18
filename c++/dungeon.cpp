@@ -55,6 +55,19 @@ int is_item(int row, int col)
 	return -1;
 }
 
+bool is_on_floor_item(int row, int col)
+{
+	int item_index = is_item(row, col);
+	if (item_index >= 0)
+	{
+		if (dungeon.items[item_index].status == ITEM_ON_FLOOR)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void print_dungeon()
 {
 	printf("   ");
