@@ -18,7 +18,7 @@ void clear_message(WINDOW *win)
 	}
 }
 
-void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
+void print_dungeon_fog(WINDOW *game, const char *message)
 {
 	//clean previous message
 	wclear(game);
@@ -58,10 +58,10 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 				}
 				else if (!(item_index < 0))
 				{
-					color = dungeon.item[item_index].color_display;
+					color = dungeon.items[item_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
-					mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
+					mvwprintw(game, i, j, "%c", dungeon.items[item_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
 				else
@@ -242,10 +242,10 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(item_index < 0))
 			{
-				color = dungeon.item[item_index].color_display;
+				color = dungeon.items[item_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.items[item_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 			}
 			else
@@ -304,10 +304,10 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(item_index < 0))
 			{
-				color = dungeon.item[item_index].color_display;
+				color = dungeon.items[item_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.items[item_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 			}
 			else
@@ -403,7 +403,7 @@ const char *equip_item(int index)
 				//pass item from inventory to equipment
 				dungeon.pc->equipment[RING] = dungeon.pc->inventory[index];
 				dungeon.pc->equipment_open[RING] = false;
-				dungeon.pc->inventory_size--;
+				//dungeon.pc->inventory_size--;
 
 				//add item bonus to pc
 				dungeon.pc->speed += dungeon.pc->equipment[RING].speed;
@@ -422,7 +422,7 @@ const char *equip_item(int index)
 			{
 				dungeon.pc->equipment[RING_SECONDARY] = dungeon.pc->inventory[index];
 				dungeon.pc->equipment_open[RING_SECONDARY] = false;
-				dungeon.pc->inventory_size--;
+				//dungeon.pc->inventory_size--;
 
 				//add item bonus to pc
 				dungeon.pc->speed += dungeon.pc->equipment[RING_SECONDARY].speed;
@@ -447,7 +447,7 @@ const char *equip_item(int index)
 			{
 				dungeon.pc->equipment[item_type] = dungeon.pc->inventory[index];
 				dungeon.pc->equipment_open[item_type] = false;
-				dungeon.pc->inventory_size--;
+				//dungeon.pc->inventory_size--;
 
 				dungeon.pc->speed += dungeon.pc->equipment[item_type].speed;
 				dungeon.pc->hitpoints += dungeon.pc->equipment[item_type].hit;
@@ -485,8 +485,8 @@ const char *drop_item(int index)
 		int birth = inventory_item->birth;
 		if ((is_item(dungeon.pc->row, dungeon.pc->col) < 0)) //check if current terrain open
 		{
-			dungeon.item[birth].row = dungeon.pc->row + 1;
-			dungeon.item[birth].col = dungeon.pc->col + 1;
+			dungeon.items[birth].row = dungeon.pc->row + 1;
+			dungeon.items[birth].col = dungeon.pc->col + 1;
 			message = "item droped";
 		}
 		else
@@ -494,7 +494,7 @@ const char *drop_item(int index)
 			message = "you have to drop item on empty space";
 		}
 
-		dungeon.pc->inventory_size--;
+		//dungeon.pc->inventory_size--;
 		//memset(inventory_item, 0, sizeof(Item));
 		inventory_item->rarity = 0;
 
@@ -516,14 +516,14 @@ const char *takeoff_item(int index)
 		Item *equip_item = &(dungeon.pc->equipment[index]);
 		//std::string item_name(equip_item->name);
 
-		if (dungeon.pc->inventory_size != PC_INVENTORY)
+		if (is_inventory_full())
 		{
 			for (int i = 0; i < PC_INVENTORY; i++)
 			{
 				if ((dungeon.pc->inventory[i]).rarity == 0)
 				{
 					dungeon.pc->inventory[i] = dungeon.pc->equipment[index];
-					dungeon.pc->inventory_size++;
+					//dungeon.pc->inventory_size++;
 					dungeon.pc->equipment_open[index] = true;
 					break;
 				}
@@ -545,8 +545,8 @@ const char *takeoff_item(int index)
 			int item_birth = equip_item->birth;
 			if ((is_item(dungeon.pc->row, dungeon.pc->col) < 0)) //check if current terrain open
 			{
-				dungeon.item[item_birth].row = dungeon.pc->row;
-				dungeon.item[item_birth].col = dungeon.pc->col;
+				dungeon.items[item_birth].row = dungeon.pc->row;
+				dungeon.items[item_birth].col = dungeon.pc->col;
 				dungeon.pc->equipment_open[index] = true;
 				//memset(equip_item, 0, sizeof(Item));
 
@@ -638,8 +638,7 @@ const char *expunge_item(int index)
 	{
 		Item *inventory_item = &(dungeon.pc->inventory[index]);
 		std::string item_name(inventory_item->name);
-
-		dungeon.pc->inventory_size--;
+		//dungeon.pc->inventory_size--;
 		//memset(inventory_item, 0, sizeof(Item));
 		inventory_item->rarity = 0;
 
@@ -1240,10 +1239,10 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 				}
 				else if (!(item_index < 0))
 				{
-					color = dungeon.item[item_index].color_display;
+					color = dungeon.items[item_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
-					mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
+					mvwprintw(game, i, j, "%c", dungeon.items[item_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
 				else
@@ -1644,7 +1643,7 @@ void dungeon_ncurses()
 		}
 		else if (fog)
 		{
-			print_dungeon_fog_ncurses(game, message);
+			print_dungeon_fog(game, message);
 		}
 		else
 		{

@@ -103,6 +103,15 @@ enum
 	NUM_EQUIPMENT,
 };
 
+enum
+{
+	ITEM_IN_INVENTORY,
+	ITEM_IN_EQUIPMENT,
+	ITEM_ON_FLOOR,
+	ITEM_IS_EXPUNGED,
+	NUM_ITEM_STATUS,
+};
+
 class Tile
 {
 	public:
@@ -156,10 +165,7 @@ class Item
 		char *type_string;
 
 		int birth;
-		bool is_inventory;
-		bool is_equipment;
-		bool is_item;
-		bool is_onfloor;
+		int status;
 };
 
 class Character
@@ -195,11 +201,10 @@ class PC : public Character
 	public:
 		int vision_range;
 		int vision_map[ROW][COL];
-		int inventory_size;
 		int damage_bonus;
 		bool equipment_open[NUM_EQUIPMENT];
-		Item *equipment;
-		Item *inventory;
+		std::vector<Item> equipment;
+		std::vector<Item> inventory;
 		bool superman;
 };
 
@@ -260,7 +265,7 @@ class Dungeon
 		std::vector<Water> waters;
 		std::vector<Lava> lavas;
 		std::vector<NPC> npcs;
-		std::vector<Item> item;
+		std::vector<Item> items;
 		PC *pc;
 		int cursor_row;
 		int cursor_col;
@@ -288,7 +293,7 @@ int is_visible_terrain(int i, int j);
 int is_inside(int row, int col);
 int is_monster(int row, int col);
 int is_item(int row, int col);
-bool is_inventory_open();
+bool is_inventory_full();
 void remember_map_PC();
 
 #endif

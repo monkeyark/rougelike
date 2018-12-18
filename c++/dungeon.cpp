@@ -33,8 +33,8 @@ int is_monster(int row, int col)
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
 		if (row == dungeon.npcs[i].row &&
-				col == dungeon.npcs[i].col &&
-				!dungeon.npcs[i].dead)
+			col == dungeon.npcs[i].col &&
+			!dungeon.npcs[i].dead)
 		{
 			return i;
 		}
@@ -46,8 +46,8 @@ int is_item(int row, int col)
 {
 	for (int i = 0; i < dungeon.num_item; i++)
 	{
-		if (row == dungeon.item[i].row &&
-				col == dungeon.item[i].col)
+		if (row == dungeon.items[i].row &&
+			col == dungeon.items[i].col)
 		{
 			return i;
 		}
@@ -417,7 +417,6 @@ PC new_PC()
 
 	pc.speed = 10;
 	pc.vision_range = PC_BASE_VISION_RADIUS;
-	pc.inventory_size = 0;
 	pc.hitpoints = PC_FULL_HP;
 	pc.regen = 7;
 	pc.damage = dice(0, 1, 4);
@@ -434,8 +433,8 @@ PC new_PC()
 			pc.vision_map[i][j] = 0;
 		}
 	}
-	pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
-	pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
+	// pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
+	// pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
 	remember_map_PC();
 	dungeon.map[pc.row][pc.col].space = PLAYER;
 
@@ -498,9 +497,9 @@ NPC new_NPC(int birth)
 	return npc;
 }
 
-bool is_inventory_open()
+bool is_inventory_full()
 {
-	return dungeon.pc->inventory_size != PC_INVENTORY;
+	return dungeon.pc->inventory.size() != PC_INVENTORY;
 }
 
 Item new_item(int birth)
@@ -557,6 +556,7 @@ Item new_item(int birth)
 	item.artifact = obj.artifact;
 	item.rarity = obj.rarity;
 	item.type = obj.type;
+	item.status = ITEM_ON_FLOOR;
 	if (obj.type == LIGHT)//TODO
 	{
 		item.vision_bonus = 5;
@@ -688,7 +688,7 @@ void generate_dungeon()
 	//add object
 	for (i = 0; i < dungeon.num_item; i++)
 	{
-		dungeon.item.push_back(new_item(i));
+		dungeon.items.push_back(new_item(i));
 	}
 }
 
@@ -705,8 +705,8 @@ void delete_dungeon_desc()
 	// free(dungeon.lavas);
 	// free(dungeon.monster);
 	// free(dungeon.item);
-	free(dungeon.pc->equipment);
-	free(dungeon.pc->inventory);
+	// free(dungeon.pc->equipment);
+	// free(dungeon.pc->inventory);
 	dungeon.pc->hitpoints = PC_FULL_HP;
 	dungeon.pc->damage_bonus = 0;
 	dungeon.pc->speed = 10;

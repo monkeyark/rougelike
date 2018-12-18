@@ -250,20 +250,17 @@ const char *move_pc(int row_move, int col_move)
 		if (item_index >= 0)
 		{
 			//iventory has space to pick up new item
-			if (is_inventory_open())
+			if (is_inventory_full())
 			{
-				//add item in current location to inventory
-				dungeon.pc->inventory[dungeon.pc->inventory_size] = dungeon.item[item_index];
-				dungeon.pc->inventory[dungeon.pc->inventory_size].name = dungeon.item[item_index].name;
-				dungeon.item[item_index].row = -1;
-				dungeon.item[item_index].col = -1;
-				dungeon.pc->inventory_size++;
+				Item *item = &dungeon.items[item_index];
+				item->status = ITEM_IN_INVENTORY;
+				dungeon.pc->inventory.push_back(*item);
 				message = "You picked up one item";
 			}
 			else
 			{
 				message = "Iventory is full, no space to pickup";
-				dungeon.map[dungeon.pc->row][dungeon.pc->col].space = dungeon.item[item_index].symbol;
+				dungeon.map[dungeon.pc->row][dungeon.pc->col].space = dungeon.items[item_index].symbol;
 			}
 		}
 		else if (npc_index >= 0)
