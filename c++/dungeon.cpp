@@ -436,7 +436,7 @@ PC new_PC()
 	pc.superman = false;
 	for (int i = 0; i < NUM_EQUIPMENT; i++)
 	{
-		pc.equipment_open[i] = true;
+		pc.is_equiped[i] = false;
 	}
 
 	for (int i = 0; i < ROW; i++)
@@ -512,7 +512,7 @@ NPC new_NPC(int birth)
 
 bool is_inventory_full()
 {
-	return dungeon.pc->inventory.size() != PC_INVENTORY;
+	return dungeon.pc->inventory.size() == PC_INVENTORY;
 }
 
 Item new_item(int birth)

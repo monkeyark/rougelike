@@ -398,11 +398,11 @@ const char *equip_item(int index)
 		//check if item is ring
 		if (item_type == RING)
 		{
-			if (dungeon.pc->equipment_open[RING]) //first ring slot open
+			if (!dungeon.pc->is_equiped[RING]) //first ring slot open
 			{
 				//pass item from inventory to equipment
 				dungeon.pc->equipment[RING] = dungeon.pc->inventory[index];
-				dungeon.pc->equipment_open[RING] = false;
+				dungeon.pc->is_equiped[RING] = true;
 				//dungeon.pc->inventory_size--;
 
 				//add item bonus to pc
@@ -418,10 +418,10 @@ const char *equip_item(int index)
 
 				message = inventory_item->name;
 			}
-			else if (dungeon.pc->equipment_open[RING_SECONDARY]) //second ring slot open
+			else if (!dungeon.pc->is_equiped[RING_SECONDARY]) //second ring slot open
 			{
 				dungeon.pc->equipment[RING_SECONDARY] = dungeon.pc->inventory[index];
-				dungeon.pc->equipment_open[RING_SECONDARY] = false;
+				dungeon.pc->is_equiped[RING_SECONDARY] = true;
 				//dungeon.pc->inventory_size--;
 
 				//add item bonus to pc
@@ -443,10 +443,10 @@ const char *equip_item(int index)
 		}
 		else //item is not ring
 		{
-			if (dungeon.pc->equipment_open[item_type])
+			if (!dungeon.pc->is_equiped[item_type])
 			{
 				dungeon.pc->equipment[item_type] = dungeon.pc->inventory[index];
-				dungeon.pc->equipment_open[item_type] = false;
+				dungeon.pc->is_equiped[item_type] = true;
 				//dungeon.pc->inventory_size--;
 
 				dungeon.pc->speed += dungeon.pc->equipment[item_type].speed;
@@ -524,7 +524,7 @@ const char *takeoff_item(int index)
 				{
 					dungeon.pc->inventory[i] = dungeon.pc->equipment[index];
 					//dungeon.pc->inventory_size++;
-					dungeon.pc->equipment_open[index] = true;
+					dungeon.pc->is_equiped[index] = false;
 					break;
 				}
 			}
@@ -547,7 +547,7 @@ const char *takeoff_item(int index)
 			{
 				dungeon.items[item_birth].row = dungeon.pc->row;
 				dungeon.items[item_birth].col = dungeon.pc->col;
-				dungeon.pc->equipment_open[index] = true;
+				dungeon.pc->is_equiped[index] = false;
 				//memset(equip_item, 0, sizeof(Item));
 
 				equip_item->rarity = 0;

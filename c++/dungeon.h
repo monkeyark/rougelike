@@ -202,9 +202,9 @@ class PC : public Character
 		int vision_range;
 		int vision_map[ROW][COL];
 		int damage_bonus;
-		bool equipment_open[NUM_EQUIPMENT];
-		std::vector<Item> equipment;
 		std::vector<Item> inventory;
+		std::vector<Item> equipment;
+		bool is_equiped[NUM_EQUIPMENT];
 		bool superman;
 };
 

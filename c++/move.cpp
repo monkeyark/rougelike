@@ -228,12 +228,12 @@ const char *move_pc(int row_move, int col_move)
 		message = "PC is resting!";
 	}
 	else if ((dungeon.map[dungeon.pc->row + row_move][dungeon.pc->col + col_move].terrain == WATER) &&
-			dungeon.pc->equipment_open[CLOAK])
+			!dungeon.pc->is_equiped[CLOAK])
 	{
 		message = "PC cannot swim in water without cloak!";
 	}
 	else if ((dungeon.map[dungeon.pc->row + row_move][dungeon.pc->col + col_move].terrain == LAVA) &&
-			dungeon.pc->equipment_open[BOOTS])
+			!dungeon.pc->is_equiped[BOOTS])
 	{
 		message = "PC cannot walk on lava without boots!";
 	}
@@ -250,12 +250,14 @@ const char *move_pc(int row_move, int col_move)
 		if (item_index >= 0)
 		{
 			//iventory has space to pick up new item
-			if (is_inventory_full())
+			if (!is_inventory_full())
 			{
 				Item *item = &dungeon.items[item_index];
 				item->status = ITEM_IN_INVENTORY;
 				dungeon.pc->inventory.push_back(*item);
 				message = "You picked up one item";
+				dungeon.pc->row += row_move;
+				dungeon.pc->col += col_move;
 			}
 			else
 			{
