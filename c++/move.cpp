@@ -255,6 +255,8 @@ const char *move_pc(int row_move, int col_move)
 				Item *item = &dungeon.items[item_index];
 				item->status = ITEM_IN_INVENTORY;
 				dungeon.pc->inventory.push_back(*item);
+				//dungeon.map[dungeon.pc->row][dungeon.pc->col].space = dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain;
+
 				message = "You picked up one item";
 				dungeon.pc->row += row_move;
 				dungeon.pc->col += col_move;

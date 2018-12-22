@@ -8,7 +8,7 @@
 #include "path.h"
 
 
-void clear_message(WINDOW *win)
+void clear_game_message(WINDOW *win)
 {
 	//clean previous message
 	int i, j;
@@ -18,23 +18,74 @@ void clear_message(WINDOW *win)
 	}
 }
 
-void print_dungeon_fog(WINDOW *game, const char *message)
+void print_game_message(WINDOW *win, const char *message)
 {
-	//clean previous message
-	wclear(game);
-
 	int i, j;
-	//print current message
 	const char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
 	{
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+		wattron(win, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(win, i, j, m);
+		wattroff(win, COLOR_PAIR(COLOR_CYAN));
+	}
+}
+
+void print_dungeon_ncurses(WINDOW *game, const char *message)
+{
+	//clean previous message
+	wclear(game);
+	print_game_message(game, message);
+	//print dungeon
+	int i, j;
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			short color;
+			int npc_index = is_monster((i - 1), j);
+			int item_index = is_item((i - 1), j);
+			if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
+			{
+				mvwprintw(game, i, j, "@");
+			}
+			else if (npc_index >= 0)
+			{
+				color = dungeon.npcs[npc_index].color_display;
+				init_pair(color, color, COLOR_BLACK);
+				wattron(game, COLOR_PAIR(color));
+				mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
+				wattroff(game, COLOR_PAIR(color));
+			}
+			else if (is_on_floor_item(i - 1, j))
+			{
+				color = dungeon.items[item_index].color_display;
+				init_pair(color, color, COLOR_BLACK);
+				wattron(game, COLOR_PAIR(color));
+				mvwprintw(game, i, j, "%c", dungeon.items[item_index].symbol);
+				wattroff(game, COLOR_PAIR(color));
+			}
+			else
+			{
+				mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+			}
+		}
 	}
 
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
+	move(TERMINAL_ROW - 1, 0);
+	clrtoeol();
+}
+
+void print_dungeon_fog(WINDOW *game, const char *message)
+{
+	//clean previous message
+	wclear(game);
+	print_game_message(game, message);
 	//print dungeon
+	int i, j;
 	for (i = 1; i < ROW + 1; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -193,64 +244,6 @@ void print_dungeon_dijkstra_path(WINDOW *game, const char *message)
 			else
 			{
 				mvwprintw(game, i, j, " ");
-			}
-		}
-	}
-
-	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
-	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
-	move(TERMINAL_ROW - 1, 0);
-	clrtoeol();
-}
-
-void print_dungeon_ncurses(WINDOW *game, const char *message)
-{
-	//clean previous message
-	wclear(game);
-
-	int i, j;
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-	}
-
-	//print dungeon
-	for (i = 1; i < ROW + 1; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			short color;
-			int npc_index = is_monster((i - 1), j);
-			int item_index = is_item((i - 1), j);
-			if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
-			{
-				mvwprintw(game, i, j, "@");
-			}
-			else if (npc_index >= 0)
-			{
-				color = dungeon.npcs[npc_index].color_display;
-				init_pair(color, color, COLOR_BLACK);
-				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
-				wattroff(game, COLOR_PAIR(color));
-			}
-			else if (item_index >= 0)
-			{
-				color = dungeon.items[item_index].color_display;
-				init_pair(color, color, COLOR_BLACK);
-				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.items[item_index].symbol);
-				wattroff(game, COLOR_PAIR(color));
-			}
-			else
-			{
-				mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
 			}
 		}
 	}
@@ -575,7 +568,7 @@ void item_wear()
 	const char *message = "press number key to select item to wear, ESC to return";
 	while (run)
 	{
-		clear_message(list);
+		clear_game_message(list);
 		print_iventory_ncurses(list, message);
 		int key = wgetch(list);
 		switch (key)
@@ -584,43 +577,43 @@ void item_wear()
 				run = false;
 				break;
 			case '0':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(0);
 				break;
 			case '1':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(1);
 				break;
 			case '2':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(2);
 				break;
 			case '3':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(3);
 				break;
 			case '4':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(4);
 				break;
 			case '5':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(5);
 				break;
 			case '6':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(6);
 				break;
 			case '7':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(7);
 				break;
 			case '8':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(8);
 				break;
 			case '9':
-				clear_message(list);
+				clear_game_message(list);
 				message = equip_item(9);
 				break;
 		}
@@ -660,7 +653,7 @@ void item_expunge()
 	const char *message = "press number key to expunge item, ESC to return";
 	while (run)
 	{
-		clear_message(list);
+		clear_game_message(list);
 		print_iventory_ncurses(list, message);
 		int key = wgetch(list);
 		switch (key)
@@ -722,43 +715,43 @@ void item_drop()
 				run = false;
 				break;
 			case '0':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(0);
 				break;
 			case '1':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(1);
 				break;
 			case '2':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(2);
 				break;
 			case '3':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(3);
 				break;
 			case '4':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(4);
 				break;
 			case '5':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(5);
 				break;
 			case '6':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(6);
 				break;
 			case '7':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(7);
 				break;
 			case '8':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(8);
 				break;
 			case '9':
-				clear_message(list);
+				clear_game_message(list);
 				message = drop_item(9);
 				break;
 		}
@@ -1018,51 +1011,51 @@ void item_takeoff()
 				run = false;
 				break;
 			case 'a':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(WEAPON);
 				break;
 			case 'b':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(OFFHAND);
 				break;
 			case 'c':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(RANGED);
 				break;
 			case 'd':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(ARMOR);
 				break;
 			case 'e':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(HELMET);
 				break;
 			case 'f':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(CLOAK);
 				break;
 			case 'g':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(GLOVES);
 				break;
 			case 'h':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(BOOTS);
 				break;
 			case 'i':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(AMULET);
 				break;
 			case 'j':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(LIGHT);
 				break;
 			case 'k':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(RING);
 				break;
 			case 'l':
-				clear_message(list);
+				clear_game_message(list);
 				message = takeoff_item(RING_SECONDARY);
 				break;
 		}
@@ -1285,7 +1278,7 @@ const char *move_lookup_cursor(int row_move, int col_move)
 const char *print_monster_descr(WINDOW *lookup, int row_move, int col_move)
 {
 	//clean previous message
-	clear_message(lookup);
+	clear_game_message(lookup);
 
 	int i, j;
 	int npc_index = is_monster(dungeon.cursor_row, dungeon.cursor_col);
