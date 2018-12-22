@@ -707,19 +707,6 @@ void generate_dungeon()
 
 void delete_dungeon()
 {
-	// free(dungeon.rooms);
-	// free(dungeon.monster);
-}
-
-void delete_dungeon_desc()
-{
-	// free(dungeon.rooms);
-	// free(dungeon.waters);
-	// free(dungeon.lavas);
-	// free(dungeon.monster);
-	// free(dungeon.item);
-	// free(dungeon.pc->equipment);
-	// free(dungeon.pc->inventory);
 	dungeon.pc->hitpoints = PC_FULL_HP;
 	dungeon.pc->damage_bonus = 0;
 	dungeon.pc->speed = 10;

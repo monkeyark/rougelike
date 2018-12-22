@@ -1689,7 +1689,7 @@ void dungeon_ncurses()
 					//delete_dungeon();
 					//generate_dungeon();
 
-					delete_dungeon_desc();
+					delete_dungeon();
 					generate_dungeon();
 					message = "You went up stair";
 				}
@@ -1704,7 +1704,7 @@ void dungeon_ncurses()
 					//delete_dungeon();
 					//generate_dungeon();
 
-					delete_dungeon_desc();
+					delete_dungeon();
 					generate_dungeon();
 					message = "You went down stair";
 				}

@@ -285,7 +285,6 @@ void print_dungeon();
 void load_dungeon();
 void save_dungeon();
 void delete_dungeon();
-void delete_dungeon_desc();
 void move_dungeon();
 
 int get_random(int modulus, int min);
