@@ -312,7 +312,7 @@ const char *move_pc(int row_move, int col_move)
 		}
 
 		move_npc();
-		remember_map_PC();
+		map_memorize(dungeon.pc);
 	}
 	else
 	{

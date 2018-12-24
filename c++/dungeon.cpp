@@ -383,27 +383,27 @@ void new_stair()
 	}
 }
 
-int is_visible_terrain(int i, int j)
+int is_visible_terrain(int i, int j, PC *pc)
 {
 	
-	return i >= dungeon.pc->row - dungeon.pc->vision_range &&
-		i <= dungeon.pc->row + dungeon.pc->vision_range &&
-		j >= dungeon.pc->col - dungeon.pc->vision_range &&
-		j <= dungeon.pc->col + dungeon.pc->vision_range;
+	return i >= pc->row - pc->vision_range &&
+		i <= pc->row + pc->vision_range &&
+		j >= pc->col - pc->vision_range &&
+		j <= pc->col + pc->vision_range;
 }
 
-void remember_map_PC()
+void map_memorize(PC *pc)
 {
 	int row, col;
-	for (row = dungeon.pc->row - dungeon.pc->vision_range; row < dungeon.pc->row + dungeon.pc->vision_range + 1; row++)
+	for (row = pc->row - pc->vision_range; row < pc->row + pc->vision_range + 1; row++)
 	{
-		for (col = dungeon.pc->col - dungeon.pc->vision_range; col < dungeon.pc->col + dungeon.pc->vision_range + 1; col++)
+		for (col = pc->col - pc->vision_range; col < pc->col + pc->vision_range + 1; col++)
 		{
 			if (row >= 0 && col >= 0 && row < ROW && col < COL)
 			{
-				dungeon.pc->vision_map[row][col] = 1;
+				pc->vision_map[row][col] = 1;
 				//if (is_monster(row, col) && is_visible_terrain(row, col))
-				if (is_visible_terrain(row, col))
+				if (is_visible_terrain(row, col, pc))
 				{
 					dungeon.map[row][col].fog = dungeon.map[row][col].space;
 				}
@@ -418,22 +418,19 @@ void remember_map_PC()
 
 PC new_PC()
 {
-	//add initial player location
 	PC pc;
-	dungeon.pc = (PC *)calloc(1, sizeof(PC));
-	dungeon.pc = &pc;
 
 	pc.birth = -1;
 	pc.dead = 0;
 	pc.row = dungeon.rooms[0].row;
 	pc.col = dungeon.rooms[0].col;
-
 	pc.speed = 10;
 	pc.vision_range = PC_BASE_VISION_RADIUS;
 	pc.hitpoints = PC_FULL_HP;
 	pc.regen = 7;
 	pc.damage = dice(0, 1, 4);
 	pc.superman = false;
+
 	for (int i = 0; i < NUM_EQUIPMENT; i++)
 	{
 		pc.is_equiped[i] = false;
@@ -446,13 +443,8 @@ PC new_PC()
 			pc.vision_map[i][j] = 0;
 		}
 	}
-	// pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
-	// pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
-	remember_map_PC();
+	map_memorize(&pc);
 	dungeon.map[pc.row][pc.col].space = PLAYER;
-
-	dungeon.pc = (PC *)calloc(1, sizeof(PC));
-	dungeon.pc[0] = pc;
 
 	return pc;
 }
@@ -549,7 +541,7 @@ Item new_item(int birth)
 
 	//item.name = obj.name.c_str();
 	item.name = new char[obj.name.length() +1];
-	strcpy(item.name,obj.name.c_str());
+	strcpy(item.name, obj.name.c_str());
 	//std::cout << "name of monster :" << item.name << std::endl;
 	//std::cout << "name of the coming object : "<<obj.name.c_str() << std::endl<<std::endl;
 	//item.description = obj.description.c_str();
@@ -609,14 +601,7 @@ void generate_dungeon()
 	//dungeon.num_mon = 1;//DEBUG
 	dungeon.num_item = get_random(5, 11);
 
-	// dungeon.rooms = (Room *)calloc(dungeon.num_room, sizeof(Room));
-	// dungeon.lavas = (Lava *)calloc(dungeon.num_lava, sizeof(Lava));
-	// dungeon.waters = (Water *)calloc(dungeon.num_water, sizeof(Water));
-	// dungeon.monster = (NPC *)calloc(dungeon.num_mon, sizeof(NPC));
-	// dungeon.item = (Item *)calloc(dungeon.num_item, sizeof(Item));
-
 	int i;
-
 	//add lava
 	for (i = 0; i < dungeon.num_lava; i++)
 	{

@@ -288,12 +288,12 @@ void delete_dungeon();
 void move_dungeon();
 
 int get_random(int modulus, int min);
-int is_visible_terrain(int i, int j);
+int is_visible_terrain(int i, int j, PC *pc);
 int is_inside(int row, int col);
 int is_monster(int row, int col);
 int is_item(int row, int col);
 bool is_inventory_full();
 bool is_on_floor_item(int row, int col);
-void remember_map_PC();
+void map_memorize(PC *pc);
 
 #endif

@@ -93,7 +93,7 @@ void print_dungeon_fog(WINDOW *game, const char *message)
 			short color;
 			int npc_index = is_monster((i - 1), j);
 			int item_index = is_item((i - 1), j);
-			if (is_visible_terrain((i - 1), j))
+			if (is_visible_terrain((i - 1), j, dungeon.pc))
 			{
 				if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
 				{
@@ -1129,7 +1129,7 @@ const char *move_pc_teleport(int row_move, int col_move)
 			dungeon.map[dungeon.pc->row][dungeon.pc->col].hardness = CORRIDOR_H;
 		}
 		move_npc();
-		remember_map_PC();
+		map_memorize(dungeon.pc);
 		message = "";
 	}
 
@@ -1159,7 +1159,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 			short color;
 			int npc_index = is_monster((i - 1), j);
 			int item_index = is_item((i - 1), j);
-			if (is_visible_terrain((i - 1), j))
+			if (is_visible_terrain((i - 1), j, dungeon.pc))
 			{
 				if ((i - 1) == dungeon.cursor_row && j == dungeon.cursor_col)
 				{
@@ -1209,7 +1209,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 const char *move_lookup_cursor(int row_move, int col_move)
 {
 	const char *message = "move cursor to monster";
-	if (is_visible_terrain(dungeon.cursor_row + row_move, dungeon.cursor_col + col_move))
+	if (is_visible_terrain(dungeon.cursor_row + row_move, dungeon.cursor_col + col_move, dungeon.pc))
 	{
 		dungeon.cursor_row += row_move;
 		dungeon.cursor_col += col_move;
