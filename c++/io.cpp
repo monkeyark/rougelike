@@ -73,7 +73,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	}
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
-	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %06d   speed %5d   damage %5d",
 			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
 	move(TERMINAL_ROW - 1, 0);
 	clrtoeol();
@@ -107,7 +107,7 @@ void print_dungeon_fog(WINDOW *game, const char *message)
 					mvwprintw(game, i, j, "%c", dungeon.npcs[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 				}
-				else if (is_on_floor_item(i -1, j))
+				else if (is_on_floor_item(i - 1, j))
 				{
 					color = dungeon.items[item_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
@@ -136,7 +136,7 @@ void print_dungeon_fog(WINDOW *game, const char *message)
 	}
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
-	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %06d   speed %5d   damage %5d",
 			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
 	move(TERMINAL_ROW - 1, 0);
 	clrtoeol();

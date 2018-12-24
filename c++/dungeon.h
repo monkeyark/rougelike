@@ -163,9 +163,9 @@ class Item
 		int rarity;
 		int type;
 		char *type_string;
+		int status;
 
 		int birth;
-		int status;
 };
 
 class Character
