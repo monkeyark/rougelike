@@ -1,0 +1,8 @@
+gdb degub on process
+1 run program
+2 ps -u
+3 gdb -p PID
+4 bt
+5 call t = 0
+6 break main.cpp:line_number
+7 continue
