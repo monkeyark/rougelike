@@ -146,19 +146,9 @@ void print_dungeon_terrian(WINDOW *game, const char *message)
 {
 	//clean previous message
 	wclear(game);
-
-	int i, j;
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-	}
-
+	print_game_message(game, message);
 	//print dungeon
+	int i, j;
 	for (i = 1; i < ROW + 1; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -178,19 +168,9 @@ void print_dungeon_hardness(WINDOW *game, const char *message)
 {
 	//clean previous windows
 	wclear(game);
-
-	int i, j;
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-	}
-
+	print_game_message(game, message);
 	//print dungeon
+	int i, j;
 	for (i = 1; i < ROW + 1; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -213,19 +193,9 @@ void print_dungeon_dijkstra_path(WINDOW *game, const char *message)
 {
 	//clean previous message
 	wclear(game);
-
-	int i, j;
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-	}
-
+	print_game_message(game, message);
 	//print dungeon
+	int i, j;
 	for (i = 1; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -259,19 +229,9 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 {
 	//clean previous message
 	wclear(game);
-
-	int i, j;
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-	}
-
+	print_game_message(game, message);
 	//print dungeon
+	int i, j;
 	for (i = 1; i < ROW + 1; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -313,15 +273,9 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 
 void print_equipment_ncurses(WINDOW *list, const char *message)
 {
-	int i, j;
-	for (i = 0, j = 0; *message; message++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(list, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(list, i, j, message);
-		wattroff(list, COLOR_PAIR(COLOR_CYAN));
-	}
+	print_game_message(list, message);
 
+	int i, j;
 	char str[TERMINAL_COL];
 	char *m;
 	for (i = 1, j = 0; i < NUM_EQUIPMENT + 1; i++, j++)
@@ -346,15 +300,9 @@ void print_equipment_ncurses(WINDOW *list, const char *message)
 
 void print_iventory_ncurses(WINDOW *list, const char *message)
 {
-	int i, j;
-	for (i = 0, j = 0; *message; message++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(list, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(list, i, j, message);
-		wattroff(list, COLOR_PAIR(COLOR_CYAN));
-	}
+	print_game_message(list, message);
 
+	int i, j;
 	char str[TERMINAL_COL];
 	char *m;
 	for (i = 1, j = 0; i < PC_INVENTORY + 1; i++, j++)
@@ -470,7 +418,6 @@ const char *equip_item(int index)
 const char *drop_item(int index)
 {
 	const char *message;
-
 	if ((dungeon.pc->inventory[index]).rarity)
 	{
 		Item *inventory_item = &(dungeon.pc->inventory[index]);
