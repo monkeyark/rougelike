@@ -1626,9 +1626,6 @@ void dungeon_ncurses()
 			case '<':
 				if (dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain == STAIR_UP)
 				{
-					//delete_dungeon();
-					//generate_dungeon();
-
 					delete_dungeon();
 					generate_dungeon();
 					message = "You went up stair";
@@ -1641,9 +1638,6 @@ void dungeon_ncurses()
 			case '>':
 				if (dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain == STAIR_DOWN)
 				{
-					//delete_dungeon();
-					//generate_dungeon();
-
 					delete_dungeon();
 					generate_dungeon();
 					message = "You went down stair";
@@ -1758,7 +1752,6 @@ void dungeon_ncurses()
 				message = "non-tunneling distance map view";
 				break;
 			case 'E':
-				//TODO
 				equipment_inspect();
 				break;
 			case 'H':

@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     dungeon.num_mon = 0;
 	//set up random seed
 	dungeon.seed = time(NULL);
-	dungeon.seed = 1542173115;
+	//dungeon.seed = 1542173115;
 	srand(dungeon.seed);
 
 	bool load = false;

@@ -692,9 +692,32 @@ void generate_dungeon()
 
 void delete_dungeon()
 {
-	dungeon.pc->hitpoints = PC_FULL_HP;
-	dungeon.pc->damage_bonus = 0;
-	dungeon.pc->speed = 10;
+	int i;
+	dungeon.pc = nullptr;
+	for (i = 0; i < dungeon.num_mon; i++)
+	{
+		dungeon.npcs.pop_back();
+	}
+
+	for (i = 0; i < dungeon.num_item; i++)
+	{
+		dungeon.items.pop_back();
+	}
+
+	for (i = 0; i < dungeon.num_room; i++)
+	{
+		dungeon.rooms.pop_back();
+	}
+
+	for (i = 0; i < dungeon.num_lava; i++)
+	{
+		dungeon.lavas.pop_back();
+	}
+
+	for (i = 0; i < dungeon.num_water; i++)
+	{
+		dungeon.waters.pop_back();
+	}
 }
 
 void move_dungeon()
